@@ -1,0 +1,113 @@
+@startuml
+
+participant "outer:Abstraction" as outer
+participant "v:BetaReductionVisitor" as v
+participant "a:Application" as a
+participant "left:Abstraction" as left
+participant "right:LambdaTerm" as right
+participant "old:OldAlligator" as old
+
+note right of old
+	term is
+	\x.((\y.A) right)
+	aka
+	new Abstraction("x", new Application(new Abstraction("y", A), right));
+end note
+
+[->a: registerObserver(old)
+activate a
+[<--a
+deactivate a
+
+[-> outer: new(name,a)
+activate outer
+outer->a: a.registerObserver(this)
+activate a
+outer <-- a
+deactivate a
+[<-- outer
+deactivate outer
+
+[->v
+activate v
+v->outer: outer.accept(v)
+activate outer
+outer -> v: v.visitAbstraction(this)
+activate v
+v -> a: a.accept(v)
+activate a
+a -> v: v.visitApplication(a)
+activate v
+
+note over v: we can apply/reduce!
+
+v -> left: left.apply(right)
+activate left
+
+group alpha conversion
+	left -> right: right.getFreeNames()
+	activate right
+	left <-- right: Set<String> names
+	deactivate right
+	create "conv:AlphaConversionVisitor" as conv
+	left -> conv: new(names)
+	activate conv
+	left <-- conv
+	deactivate conv
+	left ->]: right.accept(conv)
+	left <--]
+	destroy conv
+end
+
+group substitution
+	create "sub:SubstitutionVisitor" as sub
+	left -> sub: new(this.name,right)
+	activate sub
+	left <-- sub
+	deactivate sub
+	left ->]: this.body.accept(sub)
+	left <--]
+	deactivate sub
+	destroy sub
+end
+
+v <-- left: change
+deactivate left
+
+group notify observers of change
+	v -> a: notifyExchange(change)
+	activate a
+
+	a -> old: observer[0].notifyExchange(a,changed)
+	activate old
+	note over old: update display
+	a <-- old
+	deactivate old
+
+	a -> outer: observer[1].notifyExchange(a,changed)
+	activate outer
+	note over outer
+		assert (this.body == a)
+		this.body = changed;
+	end note
+	a <-- outer
+	deactivate outer
+
+	v <-- a
+	deactivate a
+end
+
+a <-- v
+deactivate v
+v <-- a
+note right: visitor unwinding
+deactivate a
+
+outer <-- v
+deactivate v
+v <-- outer
+deactivate outer
+[<-- v
+deactivate v
+
+@enduml

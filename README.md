@@ -14,3 +14,5 @@ but we have not figured out how to do that reliably.
 You can `make Lambda.png` to generate a UML class diagram of the whole model.
 
 You can `make docs.tex` to generate a tex file with your JavaDoc documentation.
+
+You can `make observe.png` to generate an example UML sequence diagram.

@@ -16,5 +16,5 @@ docs/index.html: Lambda.java
 docs.tex: Lambda.java lib/texdoclet-0.9.3.jar
 	javadoc -docletpath lib/texdoclet-0.9.3.jar -doclet org.wonderly.doclets.TexDoclet -private Lambda.java
 
-observe.png: observe.pic Makefile
-	pic2plot -Tpng --bitmap-size 1000x1000 $< >$@
+%.png: %.plant
+	java -jar lib/plantuml.8018.jar -tpng $<
