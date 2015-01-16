@@ -1,7 +1,7 @@
 default:
 
 Lambda.png: Lambda.java
-	UMLGraph/umlgraph Lambda png
+	umlgraph_installation/umlgraph Lambda png
 
 .PHONY: show
 
