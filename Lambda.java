@@ -11,13 +11,17 @@ import java.util.Arrays;
  * @opt types
  * @opt visibility
  * @opt constructors
+ * @opt qualify
+ *
  * @hidden
  */
 class UMLOptions {}
 
 /**
+ * Represents a Lambda term
+ *
  * @assoc - - - LambdaVisitor
- * @composed - display - 0..1 VisibleEntity
+ * @composed - display 0..1 VisibleEntity
  * @opt nodefillcolor "#ddddff"
  */
 class LambdaTerm {
@@ -31,6 +35,8 @@ class LambdaTerm {
 }
 
 /**
+ * Represents a Lambda term with a name
+ *
  * @opt nodefillcolor "#ddddff"
  */
 abstract class NamedLambdaTerm extends LambdaTerm {
@@ -38,6 +44,8 @@ abstract class NamedLambdaTerm extends LambdaTerm {
 }
 
 /**
+ * Represents a Lambda Abstraction
+ *
  * @composed - body - LambdaTerm
  * @opt nodefillcolor "#ddddff"
  */
@@ -46,6 +54,8 @@ class Abstraction extends NamedLambdaTerm {
 }
 
 /**
+ * Represents a Lambda Application
+ *
  * @composed - left - LambdaTerm
  * @composed - right - LambdaTerm
  * @opt nodefillcolor "#ddddff"
@@ -55,6 +65,8 @@ class Application extends LambdaTerm {
 }
 
 /**
+ * Represents a Lambda Variable
+ *
  * @opt nodefillcolor "#ddddff"
  */
 class Variable extends NamedLambdaTerm {
@@ -126,6 +138,8 @@ class AndroidView {
 }
 
 /**
+ * Represents an entity which is visible on the screen.
+ *
  * @opt nodefillcolor "#ccffff"
  */
 abstract class VisibleEntity implements LambdaTermObserver {
@@ -160,6 +174,8 @@ class Controller {
 }
 
 /**
+ * Represents a way how events occur, which change the game state.
+ *
  * @opt nodefillcolor "#ffffcc"
  */
 abstract class EventSource {
