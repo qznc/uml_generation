@@ -2,7 +2,7 @@ default:
 	@echo "Read the Makefile, dosser!"
 
 Lambda.png: Lambda.java
-	umlgraph_installation/umlgraph Lambda png
+	./umlgraph Lambda png
 
 .PHONY: show docs
 
@@ -12,3 +12,6 @@ show: Lambda.png
 docs/index.html: Lambda.java
 	mkdir -p docs
 	javadoc -d docs -private Lambda.java
+
+docs.tex: Lambda.java lib/texdoclet-0.9.3.jar
+	javadoc -docletpath lib/texdoclet-0.9.3.jar -doclet org.wonderly.doclets.TexDoclet -private Lambda.java
