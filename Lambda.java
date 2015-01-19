@@ -18,7 +18,7 @@ import java.util.Arrays;
 class UMLOptions {}
 
 /**
- * Represents a Lambda term
+ * A term as it occurs within simple untyped lambda calculus.
  *
  * @assoc - - - LambdaVisitor
  * @composed - display 0..1 VisibleEntity
@@ -29,30 +29,30 @@ class LambdaTerm {
 
 	public void registerObserver(LambdaTermObserver o) {}
 	public void unregisterObserver(LambdaTermObserver o) {}
-	public void notifyAppears() {}
+	public void notifyExchange() {}
 	public void notifyDisappears() {}
-	public void notifyColorChange() {}
+	public void notifyNameChange() {}
 
 	/**
 	 * Performs a single beta-reduction on the lambda term.
 	 *
-	 * @returns   itself if no reduction was performed,
-	 *            another LambdaTerm if the node is to be exchanged, or
-	 *            null if some reduction happened deeper in the term.
+	 * @return   itself if no reduction was performed,
+	 *           another <code>LambdaTerm</code> if the node is to be exchanged, or
+	 *           <code>null</code> if some reduction happened deeper in the term.
 	 */
 	public LambdaTerm oneBetaReduction() { return this; }
 
 	/*
 	 * Tries to apply itself unto the argument.
 	 *
-	 * @ returns   itself application was not possible, or
-	 *             another term to be substituted for.
+	 * @return   itself application was not possible, or
+	 *           another <code>LambdaTerm</code> to be substituted for.
 	 */
 	public LambdaTerm apply(LambdaTerm rhs) { return this; }
 }
 
 /**
- * Represents a Lambda term with a name
+ * A term with a name.
  *
  * @opt nodefillcolor "#ddddff"
  */
@@ -61,7 +61,10 @@ abstract class NamedLambdaTerm extends LambdaTerm {
 }
 
 /**
- * Represents a Lambda Abstraction
+ * A lambda abstraction represents a function.
+ *
+ * For example, as a function it can be applied to an argument,
+ * another <code>LambdaTerm</code> object.
  *
  * @composed - body - LambdaTerm
  * @opt nodefillcolor "#ddddff"
@@ -75,7 +78,9 @@ class Abstraction extends NamedLambdaTerm {
 }
 
 /**
- * Represents a Lambda Application
+ * A lambda application contains two terms, left and right.
+ *
+ * Via beta-reduction it can apply the left term unto the right.
  *
  * @composed - left - LambdaTerm
  * @composed - right - LambdaTerm
@@ -87,7 +92,10 @@ class Application extends LambdaTerm {
 }
 
 /**
- * Represents a Lambda Variable
+ * A lambda variable can be exchanged for other terms.
+ *
+ * It is considered "bound", if it has a parent abstraction with the same name.
+ * The inverse "unbound" variables are also called "free" variables.
  *
  * @opt nodefillcolor "#ddddff"
  */
@@ -133,7 +141,7 @@ class NameCollector implements LambdaVisitor {
 interface LambdaTermObserver {
 	void exchangedFor(LambdaTerm t, LambdaTerm replacement);
 	void disappeared(LambdaTerm t);
-	void nameChanged(LambdaTerm t, string before);
+	void nameChanged(LambdaTerm t, String before);
 }
 
 /** VIEW **/
@@ -142,9 +150,19 @@ interface LambdaTermObserver {
  * @composed - entities * VisibleEntity
  * @opt nodefillcolor "#ccffff"
  */
-class AndroidView {
+class EvaluationView extends AndroidView {
 	private List<VisibleEntity> entities;
 }
+
+/**
+ * @opt nodefillcolor "#ccffff"
+ */
+class MenuView extends AndroidView { }
+
+/**
+ * @opt nodefillcolor "#ccffff"
+ */
+class SettingsView extends AndroidView { }
 
 /**
  * Represents an entity which is visible on the screen.
@@ -154,7 +172,7 @@ class AndroidView {
 abstract class VisibleEntity implements LambdaTermObserver {
 	public void exchangedFor(LambdaTerm t, LambdaTerm replacement);
 	public void disappeared(LambdaTerm t);
-	public void nameChanged(LambdaTerm t, string before);
+	public void nameChanged(LambdaTerm t, String before);
 }
 
 /**
@@ -192,6 +210,7 @@ abstract class EventSource {
 
 /**
  * @opt nodefillcolor "#ffffcc"
+ * @composed - - 1 AndroidTextInput
  */
 class Keyboard extends EventSource {
 }
@@ -202,11 +221,29 @@ class Keyboard extends EventSource {
 class GameEvents extends EventSource implements LambdaTermObserver {
 	public void exchangedFor(LambdaTerm t, LambdaTerm replacement);
 	public void disappeared(LambdaTerm t);
-	public void nameChanged(LambdaTerm t, string before);
+	public void nameChanged(LambdaTerm t, String before);
 }
 
 /**
  * @opt nodefillcolor "#ffffcc"
+ * @composed - - 1 AndroidTouches
  */
 class TouchPad extends EventSource {
 }
+
+/** EXTERNAL STUFF **/
+
+/**
+ * @opt nodefillcolor "#ffffff"
+ */
+abstract class AndroidView { }
+
+/**
+ * @opt nodefillcolor "#ffffff"
+ */
+abstract class AndroidTextInput { }
+
+/**
+ * @opt nodefillcolor "#ffffff"
+ */
+abstract class AndroidTouches { }

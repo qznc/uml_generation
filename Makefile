@@ -1,4 +1,4 @@
-default:
+default: Lambda.png observe.png
 	@echo "Read the Makefile, dosser!"
 
 Lambda.png: Lambda.java

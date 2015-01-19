@@ -1,12 +1,13 @@
 @startuml
 
-participant "outer:Abstraction" as outer
-participant "a:Application" as a
-participant "left:Abstraction" as left
-participant "right:LambdaTerm" as right
-participant "old:OldAlligator" as old
+box "model"
+	participant "outer:Abstraction" as outer
+	participant "a:Application" as a
+	participant "left:Abstraction" as left
+	participant "right:LambdaTerm" as right
+end box
 
-note right of old
+note right of right
 	term is
 	\x.((\y.A) right)
 	aka
@@ -28,6 +29,7 @@ activate left
 group alpha conversion
 	left -> right: right.getFreeNames()
 	activate right
+	note over right: collect names ...
 	left <-- right: Set<String> names
 	deactivate right
 	create "conv:AlphaConversionVisitor" as conv
@@ -55,34 +57,31 @@ end
 a <-- left: changed
 deactivate left
 
-alt changed == left
+box "view"
+	participant "old:OldAlligator" as old
+end box
 
-	outer <- a: this
+note over a
+	in this example:
+	changed != left && changed != null
+end note
 
-else changed == null
-
-	outer <- a: null
-
-else changed != left
-
-	group notify observers of change
-		a -> old: observer[0].notifyExchange(a,changed)
-		activate old
-		note over old: update display
-		a <-- old
-		deactivate old
-	end
-
-	outer <-- a: changed
-	deactivate a
-
+group notify observers of change
+	a -> old: observer[0].notifyExchange(a,changed)
+	activate old
+	note over old: update display ...
+	a <-- old
+	deactivate old
 end
 
-alt changed == body
-	[<-- outer: this
-else changed == null
-	[<-- outer: null
-end
+outer <-- a: changed
+deactivate a
+
+note over outer
+	changed != body && changed != null
+	thus: this.body = changed
+end note
+[<-- outer: null
 
 deactivate outer
 
