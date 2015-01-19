@@ -32,6 +32,23 @@ class LambdaTerm {
 	public void notifyAppears() {}
 	public void notifyDisappears() {}
 	public void notifyColorChange() {}
+
+	/**
+	 * Performs a single beta-reduction on the lambda term.
+	 *
+	 * @returns   itself if no reduction was performed,
+	 *            another LambdaTerm if the node is to be exchanged, or
+	 *            null if some reduction happened deeper in the term.
+	 */
+	public LambdaTerm oneBetaReduction() { return this; }
+
+	/*
+	 * Tries to apply itself unto the argument.
+	 *
+	 * @ returns   itself application was not possible, or
+	 *             another term to be substituted for.
+	 */
+	public LambdaTerm apply(LambdaTerm rhs) { return this; }
 }
 
 /**
@@ -50,7 +67,11 @@ abstract class NamedLambdaTerm extends LambdaTerm {
  * @opt nodefillcolor "#ddddff"
  */
 class Abstraction extends NamedLambdaTerm {
+	private LambdaTerm body;
+
 	public void accept(LambdaVisitor v) {}
+	public LambdaTerm oneBetaReduction() {}
+	public LambdaTerm apply(LambdaTerm rhs) {}
 }
 
 /**
@@ -61,6 +82,7 @@ class Abstraction extends NamedLambdaTerm {
  * @opt nodefillcolor "#ddddff"
  */
 class Application extends LambdaTerm {
+	public LambdaTerm oneBetaReduction() {}
 	public void accept(LambdaVisitor v) {}
 }
 
@@ -82,15 +104,6 @@ interface LambdaVisitor {
 	void visitAbstraction(Abstraction a);
 	void visitApplication(Application a);
 	void visitVariable(Variable v);
-}
-
-/**
- * @opt nodefillcolor "#ddddff"
- */
-class BetaReduction implements LambdaVisitor {
-	public void visitAbstraction(Abstraction a) {}
-	public void visitApplication(Application a) {}
-	public void visitVariable(Variable v) {}
 }
 
 /**
@@ -118,9 +131,9 @@ class NameCollector implements LambdaVisitor {
  * @opt nodefillcolor "#ddddff"
  */
 interface LambdaTermObserver {
-	void appears(LambdaTerm t);
-	void disappears(LambdaTerm t);
-	void nameChange(LambdaTerm t);
+	void exchangedFor(LambdaTerm t, LambdaTerm replacement);
+	void disappeared(LambdaTerm t);
+	void nameChanged(LambdaTerm t, string before);
 }
 
 /** VIEW **/
@@ -131,10 +144,6 @@ interface LambdaTermObserver {
  */
 class AndroidView {
 	private List<VisibleEntity> entities;
-
-	public void appears(LambdaTerm t);
-	public void disappears(LambdaTerm t);
-	public void nameChange(LambdaTerm t);
 }
 
 /**
@@ -143,6 +152,9 @@ class AndroidView {
  * @opt nodefillcolor "#ccffff"
  */
 abstract class VisibleEntity implements LambdaTermObserver {
+	public void exchangedFor(LambdaTerm t, LambdaTerm replacement);
+	public void disappeared(LambdaTerm t);
+	public void nameChanged(LambdaTerm t, string before);
 }
 
 /**
@@ -168,9 +180,6 @@ class OldAlligator extends VisibleEntity { }
  * @opt nodefillcolor "#ffffcc"
  */
 class Controller {
-	public void appears(LambdaTerm t);
-	public void disappears(LambdaTerm t);
-	public void nameChange(LambdaTerm t);
 }
 
 /**
@@ -191,6 +200,9 @@ class Keyboard extends EventSource {
  * @opt nodefillcolor "#ffffcc"
  */
 class GameEvents extends EventSource implements LambdaTermObserver {
+	public void exchangedFor(LambdaTerm t, LambdaTerm replacement);
+	public void disappeared(LambdaTerm t);
+	public void nameChanged(LambdaTerm t, string before);
 }
 
 /**
