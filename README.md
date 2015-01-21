@@ -4,6 +4,9 @@ This repository provides an exemplary set of tools for the PSE design phase.
 
 It assumes you run Ubuntu and are fine with editing Makefiles etc.
 It also requires graphviz and javadoc.
+For javadoc, you might have to set your $JAVAHOME environment variable,
+it points to your JDK installation.
+In my case (Ubuntu 14.04 LTS), this means `/usr/lib/jvm/default-java`.
 
 ## The Lambda Example
 
